@@ -1,0 +1,11 @@
+from math import *
+try:
+    import numpy as np
+except Exception:
+    pass
+import rlcompleter
+import readline
+readline.parse_and_bind("tab: complete")
+import numpy
+
+numpy.set_printoptions(linewidth = 200)

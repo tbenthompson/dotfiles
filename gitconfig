@@ -1,0 +1,7 @@
+[user]
+	name = Ben Thompson
+	email = t.ben.thompson@gmail.com
+[push]
+	default = matching
+[github]
+	user = tbenthompson

@@ -1,0 +1,12 @@
+ln -s ~/Dropbox/dotfiles/matplotlibrc ~/.config/matplotlib/matplotlibrc
+ln -sf /home/tbent/Dropbox/dotfiles/xmonad ~/.xmonad
+ln -sf /home/tbent/Dropbox/dotfiles/xmonad/bin/xsession ~/.xinitrc
+ln -sf /home/tbent/Dropbox/dotfiles/xmonad/bin/xsession ~/.xsession
+ln -sf /home/tbent/Dropbox/dotfiles/vimfiles ~/.vim
+ln -sf /home/tbent/Dropbox/dotfiles/vimrc ~/.vimrc
+ln -sf /home/tbent/Dropbox/dotfiles/tmux.conf ~/.tmux.conf
+ln -sf /home/tbent/Dropbox/dotfiles/ssh ~/.ssh
+ln -sf /home/tbent/Dropbox/dotfiles/gitconfig ~/.gitconfig
+ln -sf /home/tbent/Dropbox/dotfiles/pythonstartup ~/.pythonstartup
+ln -sf /home/tbent/Dropbox/dotfiles/zshrc ~/.zshrc
+cp /home/tbent/Dropbox/dotfiles/xsessionlauncher /usr/share/xsessions/custom.desktop
