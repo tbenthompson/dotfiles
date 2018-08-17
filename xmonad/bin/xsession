@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Script to configure X, start common apps, and start xmonad.
+# Author: Vic Fryzel
+# http://github.com/vicfryzel/xmonad-config
+
+# Switch caps lock and escape
+~/.keyboardconfig
+# if [ "$HOSTNAME" == "thunk" ]; then
+#    xinput -set-prop "TPPS/2 IBM TrackPoint" "Device Enabled" 0
+# fi
+
+# Configure PATH so that we can access our scripts below
+PATH=$PATH:~/.cabal/bin:~/.xmonad/bin
+
+# Configure X
+xsetroot -cursor_name left_ptr &
+
+# Start a window compositor. This ensures Google Chrome paints correctly.
+xcompmgr -n &
+
+# Start the system tray
+TRAYER_WIDTH=30
+if [ "$HOSTNAME" == "thunk" ]; then
+    echo "YO"
+    syndaemon -i 0.5 &
+    TRAYER_WIDTH=18
+fi
+trayer --edge top --align right --SetDockType true --SetPartialStrut true \
+    --expand true --width 10 --transparent true --tint 0x000000 --height $TRAYER_WIDTH &
+
+pulseaudio --start &
+dropbox start &
+if [ "$HOSTNAME" == "thunk" ]; then
+    cpulimit -e dropbox -l 10 &
+fi
+volumeicon &
+nm-applet --sm-disable &
+blueman-applet &
+xflux -z 02155 -k 3000
+
+exec xmonad
