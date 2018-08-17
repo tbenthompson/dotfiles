@@ -9,4 +9,10 @@ ln -sf /home/tbent/Dropbox/dotfiles/ssh ~/.ssh
 ln -sf /home/tbent/Dropbox/dotfiles/gitconfig ~/.gitconfig
 ln -sf /home/tbent/Dropbox/dotfiles/pythonstartup ~/.pythonstartup
 ln -sf /home/tbent/Dropbox/dotfiles/zshrc ~/.zshrc
+ln -sf /home/tbent/Dropbox/dotfiles/dropbox_uploader ~/.dropbox_uploader
+ln -sf /home/tbent/Dropbox/dotfiles/keyboardconfig ~/.keyboardconfig
+if (DESKTOP)
+    cp /home/tbent/Dropbox/dotfiles/borg.service /etc/systemd/system/borg.service
+    cp /home/tbent/Dropbox/dotfiles/borg.timer /etc/systemd/system/borg.timer
+...
 cp /home/tbent/Dropbox/dotfiles/xsessionlauncher /usr/share/xsessions/custom.desktop

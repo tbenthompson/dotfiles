@@ -1,0 +1,9 @@
+[Unit]
+Description=Borg
+ 
+[Service]
+Type=simple
+ExecStartPre=/home/tbent/bin/borg break-lock /media/tbent/goofy/borg
+ExecStart=/home/tbent/bin/borg-backup
+User=tbent
+Group=tbent

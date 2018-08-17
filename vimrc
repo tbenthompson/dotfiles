@@ -155,7 +155,6 @@ set foldlevel=99
 
 " au FileType python set omnifunc=pythoncomplete#Complete
 let g:SuperTabDefaultCompletionType = "context"
-let g:pep8_map='<leader>8'
 nnoremap <F6> :buffers<CR>:buffer<Space>
 
 nnoremap ; :
@@ -332,8 +331,6 @@ autocmd BufNewFile,BufReadPost *.tcpp,*.th,*.thpp,*.tcu set filetype=cpp
 " Use CTRL-a for switching between header files and cpp files
 nnoremap <C-a> :A<cr>
 
-let g:clang_format#code_style="google"
-autocmd FileType c,cpp,objc nnoremap <buffer><Leader>cf :<C-u>ClangFormat<CR>
-autocmd FileType c,cpp,objc vnoremap <buffer><Leader>cf :ClangFormat<CR>
-
 set clipboard=unnamedplus
+
+" nnoremap <leader>. :CtrlPTag<cr>

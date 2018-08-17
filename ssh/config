@@ -1,23 +1,35 @@
-Host tbenthompson
-    User remote
-    HostName 162.248.5.146
-    IdentityFile ~/.ssh/id_rsa
-
 Host meade02
     User tthompson
     Hostname meade02.rc.fas.harvard.edu
     IdentityFile ~/.ssh/id_rsa
+    ForwardX11 yes
+    ForwardX11Trusted yes
 
 Host meade03
     User tthompson
     Hostname meade03.rc.fas.harvard.edu
     IdentityFile ~/.ssh/id_rsa
 
+Host meade04
+    User tthompson
+    Hostname meade04.rc.fas.harvard.edu
+    IdentityFile ~/.ssh/id_rsa
+    ForwardX11 yes
+    ForwardX11Trusted yes
+
 Host meade01
     User tthompson
     Hostname meade01.rc.fas.harvard.edu
     IdentityFile ~/.ssh/id_rsa
+    ForwardX11 yes
+    ForwardX11Trusted yes
 
 Host odyssey
     User tthompson
     Hostname login.rc.fas.harvard.edu
+    ForwardX11 yes
+    ForwardX11Trusted yes
+
+Host *.ccs.ornl.gov
+    ControlMaster no
+    PreferredAuthentications keyboard-interactive,password
