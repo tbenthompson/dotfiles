@@ -260,9 +260,9 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   , ((0 , xF86XK_AudioMute), spawn "pactl set-sink-mute @DEFAULT_SINK@ toggle")
 
   , ((0, 0x1008ff02),
-     spawn "xbacklight -inc 5")
+     spawn "xbacklight -inc 13")
   , ((0, 0x1008ff03),
-     spawn "xbacklight -dec 5")
+     spawn "xbacklight -dec 13")
   ]
   ++
 

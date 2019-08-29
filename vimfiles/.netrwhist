@@ -1,11 +1,5 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =9
-let g:netrw_dirhist_1='/home/tbent/Dropbox/projects/quantco/r_http_performance/models/httpuv_base_R'
-let g:netrw_dirhist_2='/home/tbent/Dropbox/projects/quantco/r_http_performance/models/base_py'
-let g:netrw_dirhist_3='/home/tbent/Dropbox/projects/quantco/r_http_performance/models/xgb_cpp'
-let g:netrw_dirhist_4='/home/tbent/Dropbox/projects/quantco/r_http_performance/models/base_cpp'
-let g:netrw_dirhist_5='/home/tbent/Dropbox/projects/quantco/r_http_performance/models/base_py'
-let g:netrw_dirhist_6='/home/tbent/Dropbox/projects/quantco/r_http_performance/models/xgb_py'
-let g:netrw_dirhist_7='/home/tbent/Dropbox/projects/quantco/r_http_performance/models/base_py'
-let g:netrw_dirhist_8='/home/tbent/Dropbox/projects/quantco/r_http_performance/models/realistic_no_dplyr'
-let g:netrw_dirhist_9='/home/tbent/Dropbox/projects/tectosaur/tectosaur/tectosaur'
+let g:netrw_dirhist_cnt =3
+let g:netrw_dirhist_1='/home/tbent/Dropbox/projects/life'
+let g:netrw_dirhist_2='/home/tbent/Dropbox/projects/archive/okada_wrapper'
+let g:netrw_dirhist_3='/home/tbent/Dropbox/projects/tbenthompson_site/content/post/block_slider'

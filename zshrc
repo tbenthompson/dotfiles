@@ -98,7 +98,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${CUDA_HOME}/lib64
 export PATH=${CUDA_HOME}/bin:${PATH}
 
 export PATH=$PATH:/home/tbent/applications/visit2_9_2.linux-x86_64/bin
-export PATH=$PATH:/home/tbent/applications/gmsh-3.0.5-Linux/bin
+export PATH=$PATH:/home/tbent/applications/gmsh-4.0.2-Linux64/bin
 export PATH=$PATH:/home/tbent/.local/bin
 export EDITOR=vim
 if [ "$HOST" = thunk ]; then
