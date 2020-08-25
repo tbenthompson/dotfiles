@@ -9,16 +9,18 @@
 "------------------------------------------------------------
 "set up pathogen to manage plugins
 filetype off
-call pathogen#infect()
-call pathogen#helptags()
-" Features {{{1
-"
-" These options and commands enable some very useful features in Vim, that
-" no user should have to live without.
 
 " Set 'nocompatible' to ward off unexpected things that your distro might
 " have made, as well as sanely reset options when re-sourcing .vimrc
 set nocompatible
+
+call pathogen#infect()
+call pathogen#helptags()
+
+" Features {{{1
+"
+" These options and commands enable some very useful features in Vim, that
+" no user should have to live without.
 
 " Enable syntax highlighting
 syntax on

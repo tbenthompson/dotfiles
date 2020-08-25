@@ -9,6 +9,7 @@
 # Configure PATH so that we can access our scripts below
 PATH=$PATH:~/.cabal/bin:~/.xmonad/bin
 
+
 # Configure X
 xsetroot -cursor_name left_ptr &
 
@@ -28,6 +29,7 @@ volumeicon &
 nm-applet --sm-disable &
 blueman-applet &
 
+# Adjust to new screen, then calls ~/bin/keyboardconfig
 adjust_to_new_screen;
 
 STATEFILE=~/.xmonad/xmonad.state
