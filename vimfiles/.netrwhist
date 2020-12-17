@@ -1,8 +1,7 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =6
+let g:netrw_dirhist_cnt =5
 let g:netrw_dirhist_1='/home/tbent/Dropbox/projects/life'
 let g:netrw_dirhist_2='/home/tbent/Dropbox/projects/archive/okada_wrapper'
 let g:netrw_dirhist_3='/home/tbent/Dropbox/projects/tbenthompson_site/content/post/block_slider'
 let g:netrw_dirhist_4='/home/tbent/Dropbox/active/life/running'
-let g:netrw_dirhist_5='/home/tbent/Dropbox/active/quantco/glm_benchmarks/build'
-let g:netrw_dirhist_6='/home/tbent/Dropbox/active/quantco/quantcore.glm/.github/actions/unittests'
+let g:netrw_dirhist_5='/var/log/dist-upgrade'

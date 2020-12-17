@@ -2,7 +2,7 @@
 -- Author: Vic Fryzel
 -- Modified by Ben Thompson
 -- http://github.com/vicfryzel/xmonad-config
-Config { font = "xft:Source Code Pro Semibold:size=9:antialias=true"
+Config { font = "xft:Source Code Pro Semibold:pixelsize=13:antialias=true"
        , bgColor = "black"
        , fgColor = "grey"
        , position = TopW L 90

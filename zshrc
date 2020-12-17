@@ -83,7 +83,7 @@ alias grepr="grep -rn"
 alias dead="sudo shutdown -h now"
 alias reborn="sudo shutdown -r now"
 #source ~/.alias
-source /usr/local/bin/virtualenvwrapper.sh
+# source /usr/local/bin/virtualenvwrapper.sh
 # export GEOS_DIR=/home/tbent/packages/geos
 export PATH=$PATH:/home/tbent/packages/pmu-tools
 export PETSC_DIR=/etc/alternatives/petsc

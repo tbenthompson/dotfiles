@@ -4,6 +4,7 @@
 
 import System.IO
 import System.Exit
+import System.Environment(getEnv)
 import XMonad
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
@@ -22,6 +23,20 @@ import qualified Data.Map        as M
 import qualified Data.List       as DL
 import Control.Monad
 
+import Foreign.Marshal.Array ( allocaArray0, peekArray0 )
+import Foreign.C.Types ( CInt(..), CSize(..) )
+import Foreign.C.String ( CString, peekCString )
+import Foreign.C.Error ( throwErrnoIfMinus1_ )
+ 
+getHostName :: IO String
+getHostName = do
+  let size = 256
+  allocaArray0 size $ \ cstr -> do
+    throwErrnoIfMinus1_ "getHostName" $ c_gethostname cstr (fromIntegral size)
+    peekCString cstr
+ 
+foreign import ccall "gethostname" 
+   c_gethostname :: CString -> CSize -> IO CInt
 
 ------------------------------------------------------------------------
 -- Terminal
@@ -144,7 +159,7 @@ myBorderWidth = 1
 -- ("right alt"), which does not conflict with emacs keybindings. The
 -- "windows key" is usually mod4Mask.
 --
-myModMask = mod4Mask
+myModMask = mod5Mask
 
 myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   ----------------------------------------------------------------------
@@ -331,7 +346,8 @@ myStartupHook = return ()
 -- Run xmonad with all the defaults we set up.
 --
 main = do
-  xmproc <- spawnPipe "xmobar ~/.xmonad/xmobar.hs"
+  hostname <- getHostName
+  xmproc <- spawnPipe $ "xmobar ~/.xmonad/xmobar_" ++ hostname ++ ".hs -x 1"
   xmonad $ defaults {
       logHook = dynamicLogWithPP $ xmobarPP {
             ppOutput = hPutStrLn xmproc
