@@ -1,21 +1,26 @@
-" URL: http://vim.wikia.com/wiki/Example_vimrc
-"
-" Authors: http://vim.wikia.com/wiki/Vim_on_Freenode
-" Description: A minimal, but feature rich, example .vimrc. If you are a
-"              newbie, basing your first .vimrc on this file is a good choice.
-"              If you're a more advanced user, building your own .vimrc based
-"              on this file is still a good idea.
+set nocompatible              " be iMproved, required
+filetype off                  " required
 
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+Plugin 'VundleVim/Vundle.vim' " let Vundle manage Vundle, required
+
+Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'vim-scripts/a.vim'
+Plugin 'davidhalter/jedi-vim'
+Plugin 'ervandew/supertab'
+Plugin 'tomtom/tcomment_vim'
+Plugin 'SirVer/ultisnips'
+Plugin 'honza/vim-snippets'
+Plugin 'tpope/vim-surround'
+
+Plugin 'vim-scripts/imaps.vim'
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
 "------------------------------------------------------------
-"set up pathogen to manage plugins
-filetype off
-
-" Set 'nocompatible' to ward off unexpected things that your distro might
-" have made, as well as sanely reset options when re-sourcing .vimrc
-set nocompatible
-
-call pathogen#infect()
-call pathogen#helptags()
 
 " Features {{{1
 "
@@ -28,7 +33,6 @@ syntax on
 " Attempt to determine the type of a file based on its name and possibly its
 " contents. Use this to allow intelligent auto-indenting for each filetype,
 " and for plugins that are filetype specific.
-filetype indent plugin on
 set ofu=syntaxcomplete#Complete
 
 "------------------------------------------------------------
@@ -63,6 +67,7 @@ set wildmenu
 
 " Show partial commands in the last line of the screen
 set showcmd
+set showmode
 
 " Highlight searches (use <C-L> to temporarily turn off highlighting; see the
 " mapping of <C-L> below)
@@ -72,6 +77,8 @@ set nohlsearch
 " such, it may be a good idea to disable them and use the securemodelines
 " script, <http://www.vim.org/scripts/script.php?script_id=1876>.
 " set nomodeline
+
+set autoread                    "Reload files changed outside vim
 
 
 "------------------------------------------------------------
@@ -131,6 +138,8 @@ set cmdheight=1
 " Quickly time out on keycodes, but never time out on mappings
 set notimeout ttimeout ttimeoutlen=200
 
+set history=1000 "Store lots of :cmdline history
+
 " Use <F11> to toggle between 'paste' and 'nopaste'
 "------------------------------------------------------------
 " Mappings {{{1
@@ -140,13 +149,11 @@ set notimeout ttimeout ttimeoutlen=200
 " Map Y to act like D and C, i.e. to yank until EOL, rather than act as yy,
 " which is the default
 map Y y$
-map <F12> :w<CR>
 
 " Map <C-L> (redraw screen) to also turn off search highlighting until the
 " next search
 nnoremap <C-L> :nohl<CR><C-L>
 
-map <F8> :e ~/Dropbox/personal/tasks/todo_primary<CR>
 "------------------------------------------------------------
 "- plugins
 let g:tex_flavor='latex'
@@ -336,3 +343,16 @@ nnoremap <C-a> :A<cr>
 set clipboard=unnamedplus
 
 " nnoremap <leader>. :CtrlPTag<cr>
+hi ActiveWindow guibg=#21242b
+hi InactiveWindow guibg=#282c34
+
+" Call method on window enter
+augroup WindowManagement
+  autocmd!
+  autocmd WinEnter * call Handle_Win_Enter()
+augroup END
+
+" Change highlight group of active/inactive windows
+function! Handle_Win_Enter()
+  setlocal wincolor=Normal:ActiveWindow,NormalNC:InactiveWindow
+endfunction
