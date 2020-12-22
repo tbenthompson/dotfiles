@@ -1,27 +1,5 @@
 set nocompatible              " be iMproved, required
-filetype off                  " required
-
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-Plugin 'VundleVim/Vundle.vim' " let Vundle manage Vundle, required
-
-Plugin 'ctrlpvim/ctrlp.vim'
-Plugin 'vim-scripts/a.vim'
-Plugin 'davidhalter/jedi-vim'
-Plugin 'ervandew/supertab'
-Plugin 'tomtom/tcomment_vim'
-Plugin 'SirVer/ultisnips'
-Plugin 'honza/vim-snippets'
-Plugin 'tpope/vim-surround'
-
-Plugin 'vim-scripts/imaps.vim'
-
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
 "------------------------------------------------------------
-
 " Features {{{1
 "
 " These options and commands enable some very useful features in Vim, that
@@ -29,6 +7,7 @@ filetype plugin indent on    " required
 
 " Enable syntax highlighting
 syntax on
+filetype plugin indent on
 
 " Attempt to determine the type of a file based on its name and possibly its
 " contents. Use this to allow intelligent auto-indenting for each filetype,
@@ -67,7 +46,7 @@ set wildmenu
 
 " Show partial commands in the last line of the screen
 set showcmd
-set showmode
+set noshowmode
 
 " Highlight searches (use <C-L> to temporarily turn off highlighting; see the
 " mapping of <C-L> below)
@@ -132,15 +111,44 @@ set mouse=a
 
 set cmdheight=1
 
-" Display line numbers on the left
-" set number
-
 " Quickly time out on keycodes, but never time out on mappings
 set notimeout ttimeout ttimeoutlen=200
 
 set history=1000 "Store lots of :cmdline history
 
 " Use <F11> to toggle between 'paste' and 'nopaste'
+"------------------------------------------------------------
+" Set up vim-plug
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
+call plug#begin('~/.vim/plugged')
+Plug 'sheerun/vim-polyglot'
+Plug 'vim-scripts/a.vim'
+Plug 'davidhalter/jedi-vim'
+Plug 'ervandew/supertab'
+Plug 'tomtom/tcomment_vim'
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+Plug 'tpope/vim-surround'
+Plug 'vim-scripts/imaps.vim'
+Plug 'vim-scripts/bufkill.vim'
+Plug 'vim-scripts/gitignore'
+Plug 'NLKNguyen/papercolor-theme'
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+Plug 'godlygeek/tabular', {'for': ['markdown']}
+Plug 'plasticboy/vim-markdown', {'for': ['markdown']}
+Plug 'vim-airline/vim-airline'
+Plug 'tpope/vim-fugitive'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+Plug 'preservim/nerdtree'
+Plug 'psf/black', { 'branch': 'stable' }
+Plug 'jpalardy/vim-slime'
+call plug#end()
 "------------------------------------------------------------
 " Mappings {{{1
 "
@@ -154,66 +162,20 @@ map Y y$
 " next search
 nnoremap <C-L> :nohl<CR><C-L>
 
-"------------------------------------------------------------
-"- plugins
-let g:tex_flavor='latex'
-set grepprg=grep\ -nH\ $*
+" Simplify pane changes so that C-W is not required as much.
+let g:BASH_Ctrl_j = 'off'
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
+set splitbelow
+set splitright
 
-set foldmethod=indent
-set foldlevel=99
-
-" au FileType python set omnifunc=pythoncomplete#Complete
-let g:SuperTabDefaultCompletionType = "context"
+" See open buffers!
 nnoremap <F6> :buffers<CR>:buffer<Space>
 
+" Use semicolon instead of colon to avoid needing to press shift.
 nnoremap ; :
-colorscheme paintbox
-" let g:syntastic_python_checkers=['pyflakes', 'pep8']
-" let g:syntastic_full_redraws=0
-" let g:syntastic_mode_map = {'passive_filetypes': ['c++']}
-" unlet g:loaded_syntastic_cpp_gcc_checker
-nnoremap j gj
-nnoremap k gk
-
-
-function! <SID>StripTrailingWhitespaces()
-    " Preparation: save last search, and cursor position.
-    let _s=@/
-    let l = line(".")
-    let c = col(".")
-    " Do the business:
-    %s/\s\+$//e
-    " Clean up: restore previous search history, and cursor position
-    let @/=_s
-    call cursor(l, c)
-endfunction
-
-autocmd BufWritePre *.py :call <SID>StripTrailingWhitespaces()
-
-nnoremap <Leader>v :e ~/.vimrc<CR>
-nnoremap <Leader>c :source ~/.vimrc<CR>
-nnoremap <silent> <C-F11>
-\    :call system("wmctrl -ir " . v:windowid . " -b toggle,fullscreen")<CR>
-nnoremap <S-Enter> O<Esc> 
-nnoremap <CR> o<Esc> 
-nnoremap <Leader>d :BD<CR>
-
-if has("gui_running")
-  " work around linux gui F10 problem by making it a nice safe refresh
-  if has("gui_gnome") || has("gui_gtk") || has("gui_gtk2")
-    map <F10> <c-L>
-  endif
-endif
-
-" let g:jedi#popup_on_dot = 0
-
-function! <SID>DoMyPrint(args)
-  let colorsave=g:colors_name
-  syntax off
-  exec 'hardcopy '.a:args
-  syntax on
-endfunction
-command! -nargs=* Hardcopy call <SID>DoMyPrint('<args>')
 
 " CTRL-X and SHIFT-Del are Cut
 vnoremap <C-X> "+x
@@ -229,98 +191,28 @@ map <S-Insert> "+gP
 
 cmap <C-V> <C-R>+
 cmap <S-Insert> <C-R>+
-
-" Pasting blockwise and linewise selections is not possible in Insert and
-" Visual mode without the +virtualedit feature.  They are pasted as if they
-" were characterwise instead.
-" Uses the paste.vim autoload script.
-
-exe 'inoremap <script> <C-V>' paste#paste_cmd['i']
-exe 'vnoremap <script> <C-V>' paste#paste_cmd['v']
-
 imap <S-Insert> <C-V>
 vmap <S-Insert> <C-V>
 
-nnoremap <F2> :set invnumber<CR>
+nnoremap <F3> :set invnumber<CR>
 
+"use zq for ctrl-v since we've remapped ctrl-v to be paste
 nnoremap zq <c-v>
 
-" make YCM compatible with UltiSnips (using supertab) 
-let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
-let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
-let g:ycm_show_diagnostics_ui = 0
-let g:ycm_confirm_extra_conf = 0
-set completeopt-=preview
-let g:ycm_add_preview_to_completeopt = 0
-let g:ycm_filetype_blacklist = {
-    \ 'tex': 1,
-    \}
+set clipboard=unnamedplus
 
-let g:SuperTabDefaultCompletionType = '<C-n>'
+nnoremap j gj
+nnoremap k gk
 
-" better key bindings for UltiSnipsExpandTrigger
-let g:UltiSnipsExpandTrigger = "<tab>"
-let g:UltiSnipsJumpForwardTrigger = "<tab>"
-let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
+"------------------------------------------------------------
+"- colorscheme
+"
+set background=dark
+colorscheme PaperColor
 
-let g:BASH_Ctrl_j = 'off'
-nnoremap <C-J> <C-W><C-J>
-let g:BASH_Ctrl_j = 'off'
-nnoremap <C-K> <C-W><C-K>
-nnoremap <C-L> <C-W><C-L>
-nnoremap <C-H> <C-W><C-H>
-set splitbelow
-set splitright
-
-" Define the wildignore from gitignore. Primarily for CommandT
-" From http://ctoomey.com/posts/command-t-optimized/
-function! Git_Repo_Cdup() " Get the relative path to repo root
-    "Ask git for the root of the git repo (as a relative '../../' path)
-    let git_top = system('git rev-parse --show-cdup')
-    let git_fail = 'fatal: Not a git repository'
-    if strpart(git_top, 0, strlen(git_fail)) == git_fail
-        " Above line says we are not in git repo. Ugly. Better version?
-        return ''
-    else
-        " Return the cdup path to the root. If already in root,
-        " path will be empty, so add './'
-        return './' . git_top
-    endif
-endfunction
-
-function! CD_Git_Root()
-    execute 'cd '.Git_Repo_Cdup()
-    let curdir = getcwd()
-    echo 'CWD now set to: '.curdir
-endfunction
-nnoremap <LEADER>gr :call CD_Git_Root()<cr>
-
-function! WildignoreFromGitignore()
-    silent call CD_Git_Root()
-    let gitignore = '.gitignore'
-    if filereadable(gitignore)
-        let igstring = ''
-        for oline in readfile(gitignore)
-            let line = substitute(oline, '\s|\n|\r', '', "g")
-            if line =~ '^#' | con | endif
-            if line == '' | con  | endif
-            if line =~ '^!' | con  | endif
-            if line =~ '/$' | let igstring .= "," . line . "*" | con | endif
-            let igstring .= "," . line
-        endfor
-        let execstring = "set wildignore=".substitute(igstring,'^,','',"g")
-        execute execstring
-        echo 'Wildignore defined from gitignore in: '.getcwd()
-    else
-        echo 'Unable to find gitignore'
-    endif
-endfunction
-silent call WildignoreFromGitignore()
-nnoremap <LEADER>cti :call WildignoreFromGitignore()<cr>
-nnoremap <LEADER>cwi :set wildignore=''<cr>:echo 'Wildignore cleared'<cr>
-
-
-" I haven't found how to hide this function (yet)
+"------------------------------------------------------------
+"- https://stackoverflow.com/questions/290465/how-to-paste-over-without-overwriting-register
+"
 function! RestoreRegister()
   let @" = s:restore_reg
   return ''
@@ -334,25 +226,87 @@ endfunction
 " NB: this supports "rp that replaces the selection by the contents of @r
 vnoremap <silent> <expr> p <sid>Repl()
 
-" Set files ending in .th,.tcpp to be be treated as c++
-autocmd BufNewFile,BufReadPost *.tcpp,*.th,*.thpp,*.tcu set filetype=cpp
+"------------------------------------------------------------
+"- http://vimcasts.org/episodes/tidying-whitespace/
+"
+function! <SID>StripTrailingWhitespaces()
+    " Preparation: save last search, and cursor position.
+    let _s=@/
+    let l = line(".")
+    let c = col(".")
+    " Do the business:
+    %s/\s\+$//e
+    " Clean up: restore previous search history, and cursor position
+    let @/=_s
+    call cursor(l, c)
+endfunction
+
+autocmd BufWritePre *.py :call <SID>StripTrailingWhitespaces()
+
+
+"------------------------------------------------------------
+"- NERDTree
+"
+map <F1> :call NERDTreeToggleAndFind()<cr>
+map <F2> :NERDTreeToggle<CR>
+
+function! NERDTreeToggleAndFind()
+  if (exists('t:NERDTreeBufName') && bufwinnr(t:NERDTreeBufName) != -1)
+    execute ':NERDTreeClose'
+  else
+    execute ':NERDTreeFind'
+  endif
+endfunction
+
+"------------------------------------------------------------
+"- other plugin configuration
+
+let g:slime_target = "vimterminal"
+let g:slime_no_mappings = 1
+xmap <leader>c <Plug>SlimeRegionSend
+nmap <leader>c <Plug>SlimeParagraphSend
+nmap <leader>v <Plug>SlimeConfig
+nnoremap <leader>t :vert term<CR>
+let g:slime_cell_delimiter = "#%%"
+nmap <leader>x <Plug>SlimeSendCell
+
+let g:jedi#popup_on_dot = 0
+let g:jedi#goto_command = "<leader>e"
+let g:jedi#goto_assignments_command = "<leader>g"
+let g:jedi#goto_stubs_command = "<leader>s"
+let g:jedi#goto_definitions_command = ""
+let g:jedi#documentation_command = "K"
+let g:jedi#usages_command = "<leader>n"
+let g:jedi#completions_command = "<C-Space>"
+let g:jedi#rename_command = "<leader>r"
+
+nnoremap <F4> :Black<CR>
+
+" Use fzf.vim to search through files
+nnoremap <C-P> :GFiles<CR>
+" Use fzf.vim to search through file contents
+nnoremap <leader>f :Ag<CR>
+
+nnoremap <leader>m :MarkdownPreview<CR>
 
 " Use CTRL-a for switching between header files and cpp files
 nnoremap <C-a> :A<cr>
 
-set clipboard=unnamedplus
+nnoremap <leader>d :BD<CR>
 
-" nnoremap <leader>. :CtrlPTag<cr>
-hi ActiveWindow guibg=#21242b
-hi InactiveWindow guibg=#282c34
+set grepprg=grep\ -nH\ $*
 
-" Call method on window enter
-augroup WindowManagement
-  autocmd!
-  autocmd WinEnter * call Handle_Win_Enter()
-augroup END
+let g:SuperTabDefaultCompletionType = "context"
+let g:SuperTabDefaultCompletionType = '<C-n>'
 
-" Change highlight group of active/inactive windows
-function! Handle_Win_Enter()
-  setlocal wincolor=Normal:ActiveWindow,NormalNC:InactiveWindow
-endfunction
+" better key bindings for UltiSnipsExpandTrigger
+let g:UltiSnipsExpandTrigger = "<tab>"
+let g:UltiSnipsJumpForwardTrigger = "<tab>"
+let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
+
+" Pasting blockwise and linewise selections is not possible in Insert and
+" Visual mode without the +virtualedit feature.  They are pasted as if they
+" were characterwise instead.
+" Uses the paste.vim autoload script.
+exe 'inoremap <script> <C-V>' paste#paste_cmd['i']
+exe 'vnoremap <script> <C-V>' paste#paste_cmd['v']

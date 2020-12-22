@@ -101,6 +101,9 @@ myManageHook = composeAll
     , className =? "#7\","          --> doFloat -- matplotlib
     , className =? "#8\","          --> doFloat -- matplotlib
     , className =? "#9\","          --> doFloat -- matplotlib
+    , className =? "matplotlib"     --> doFloat -- matplotlib
+    , className =? "Matplotlib"     --> doFloat -- matplotlib
+    , className =? " "     --> doFloat -- matplotlib
     , fmap (".py" `DL.isInfixOf`)  className --> doFloat -- mayavi
     , isFullscreen --> (doF W.focusDown <+> doFullFloat)]
 
