@@ -128,10 +128,10 @@ endif
 call plug#begin('~/.vim/plugged')
 Plug 'sheerun/vim-polyglot'
 Plug 'vim-scripts/a.vim'
-Plug 'davidhalter/jedi-vim'
-Plug 'ervandew/supertab'
 Plug 'tomtom/tcomment_vim'
-Plug 'SirVer/ultisnips'
+Plug 'lifepillar/vim-mucomplete'
+Plug 'davidhalter/jedi-vim'
+Plug 'Shougo/neosnippet.vim'
 Plug 'honza/vim-snippets'
 Plug 'tpope/vim-surround'
 Plug 'vim-scripts/imaps.vim'
@@ -143,11 +143,15 @@ Plug 'godlygeek/tabular', {'for': ['markdown']}
 Plug 'plasticboy/vim-markdown', {'for': ['markdown']}
 Plug 'vim-airline/vim-airline'
 Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-rhubarb'
+Plug 'junegunn/gv.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'preservim/nerdtree'
 Plug 'psf/black', { 'branch': 'stable' }
 Plug 'jpalardy/vim-slime'
+Plug 'unblevable/quick-scope'
+Plug 'machakann/vim-highlightedyank'
 call plug#end()
 "------------------------------------------------------------
 " Mappings {{{1
@@ -172,10 +176,7 @@ set splitbelow
 set splitright
 
 " See open buffers!
-nnoremap <F6> :buffers<CR>:buffer<Space>
-
-" Use semicolon instead of colon to avoid needing to press shift.
-nnoremap ; :
+nnoremap <F6> :Buffers<CR>
 
 " CTRL-X and SHIFT-Del are Cut
 vnoremap <C-X> "+x
@@ -203,6 +204,39 @@ set clipboard=unnamedplus
 
 nnoremap j gj
 nnoremap k gk
+
+" Zoom
+function! s:zoom()
+  if winnr('$') > 1
+    tab split
+  elseif len(filter(map(range(tabpagenr('$')), 'tabpagebuflist(v:val + 1)'),
+        \ 'index(v:val, '.bufnr('').') >= 0')) > 1
+    tabclose
+  endif
+endfunction
+nnoremap <silent> <leader>z :call <sid>zoom()<cr>
+
+"------------------------------------------------------------
+"- terminal
+"
+nnoremap <leader>t :vert term<CR>
+tnoremap <leader>' <C-\><C-n>
+tnoremap <C-J> <C-W><C-J>
+tnoremap <C-K> <C-W><C-K>
+tnoremap <C-L> <C-W><C-L>
+tnoremap <C-H> <C-W><C-H>
+
+"------------------------------------------------------------
+"- git stuff
+nnoremap <leader>gb :Gbrowse<CR>
+
+"------------------------------------------------------------
+"- quick-scope -- must be before colorscheme call
+augroup qs_colors
+  autocmd!
+  autocmd ColorScheme * highlight QuickScopePrimary guifg='#afff5f' gui=underline ctermfg=155 cterm=underline
+  autocmd ColorScheme * highlight QuickScopeSecondary guifg='#5fffff' gui=underline ctermfg=81 cterm=underline
+augroup END
 
 "------------------------------------------------------------
 "- colorscheme
@@ -259,20 +293,32 @@ function! NERDTreeToggleAndFind()
 endfunction
 
 "------------------------------------------------------------
-"- other plugin configuration
+"- mucomplete + neosnippets, these need to cooperate to handle tab
+"
+" better completion menu behavior. 
+" https://vim.fandom.com/wiki/Make_Vim_completion_popup_menu_work_just_like_in_an_IDE
+set completeopt-=preview
+set completeopt+=longest,menuone,noselect
 
-let g:slime_target = "vimterminal"
-let g:slime_no_mappings = 1
-xmap <leader>c <Plug>SlimeRegionSend
-nmap <leader>c <Plug>SlimeParagraphSend
-nmap <leader>v <Plug>SlimeConfig
-nnoremap <leader>t :vert term<CR>
-let g:slime_cell_delimiter = "#%%"
-nmap <leader>x <Plug>SlimeSendCell
+let g:jedi#popup_on_dot = 0  " It may be 1 as well
+let g:mucomplete#enable_auto_at_startup = 1
+let g:mucomplete#always_use_completeopt = 1
+let g:mucomplete#completion_delay = 1
+let g:mucomplete#chains = {
+    \ 'default' : ['path', 'nsnp', 'omni', 'keyn', 'dict', 'uspl'],
+    \ 'vim'     : ['path', 'cmd', 'keyn']
+    \ }
+inoremap <silent> <expr> <plug><MyCR>
+    \ mucomplete#neosnippet#expand_snippet("\<cr>")
+imap <cr> <plug><MyCR>
+let g:neosnippet#enable_snipmate_compatibility = 1
+let g:neosnippet#snippets_directory='~/.vim/plugged/vim-snippets/snippets'
 
+"------------------------------------------------------------
+"- jedi
 let g:jedi#popup_on_dot = 0
 let g:jedi#goto_command = "<leader>e"
-let g:jedi#goto_assignments_command = "<leader>g"
+let g:jedi#goto_assignments_command = "<leader>a"
 let g:jedi#goto_stubs_command = "<leader>s"
 let g:jedi#goto_definitions_command = ""
 let g:jedi#documentation_command = "K"
@@ -280,29 +326,36 @@ let g:jedi#usages_command = "<leader>n"
 let g:jedi#completions_command = "<C-Space>"
 let g:jedi#rename_command = "<leader>r"
 
-nnoremap <F4> :Black<CR>
+"------------------------------------------------------------
+"- vim-slime (this needs a little work)
+"
+let g:slime_target = "vimterminal"
+let g:slime_no_mappings = 1
+xmap <leader>c <Plug>SlimeRegionSend
+nmap <leader>c <Plug>SlimeParagraphSend
+nmap <leader>v <Plug>SlimeConfig
+let g:slime_cell_delimiter = "#%%"
+nmap <leader>x <Plug>SlimeSendCell
 
-" Use fzf.vim to search through files
+"------------------------------------------------------------
+"- fzf.vim for searching files and contents
+"
 nnoremap <C-P> :GFiles<CR>
-" Use fzf.vim to search through file contents
+nnoremap <leader>p :Files<CR>
 nnoremap <leader>f :Ag<CR>
+
+"------------------------------------------------------------
+"- other plugin configuration
+
+nnoremap <F4> :Black<CR>
 
 nnoremap <leader>m :MarkdownPreview<CR>
 
 " Use CTRL-a for switching between header files and cpp files
 nnoremap <C-a> :A<cr>
 
+" close current buffer
 nnoremap <leader>d :BD<CR>
-
-set grepprg=grep\ -nH\ $*
-
-let g:SuperTabDefaultCompletionType = "context"
-let g:SuperTabDefaultCompletionType = '<C-n>'
-
-" better key bindings for UltiSnipsExpandTrigger
-let g:UltiSnipsExpandTrigger = "<tab>"
-let g:UltiSnipsJumpForwardTrigger = "<tab>"
-let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
 
 " Pasting blockwise and linewise selections is not possible in Insert and
 " Visual mode without the +virtualedit feature.  They are pasted as if they
