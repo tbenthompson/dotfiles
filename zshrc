@@ -110,7 +110,7 @@ source ~/.Renviron
 stty -ixon
 
 export PATH=$PATH:/snap/bin
-export PATH="$HOME/.cargo/bin:$PATH"
+source "$HOME/.cargo/env"
 
 eval "$ZSH_POST_RC"
 

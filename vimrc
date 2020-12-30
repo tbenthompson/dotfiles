@@ -148,7 +148,7 @@ Plug 'junegunn/gv.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'preservim/nerdtree'
-Plug 'psf/black', { 'branch': 'stable' }
+Plug 'sbdchd/neoformat'
 Plug 'jpalardy/vim-slime'
 Plug 'unblevable/quick-scope'
 Plug 'machakann/vim-highlightedyank'
@@ -347,7 +347,7 @@ nnoremap <leader>f :Ag<CR>
 "------------------------------------------------------------
 "- other plugin configuration
 
-nnoremap <F4> :Black<CR>
+nnoremap <F4> :Neoformat<CR>
 
 nnoremap <leader>m :MarkdownPreview<CR>
 
