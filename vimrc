@@ -1,3 +1,16 @@
+" SETUP DIRECTIONS:
+" General + Python
+" * copy .vim and .vimrc to the right locations
+" * preferably use vim installed from conda-forge
+" * mamba install -c conda-forge vim jedi msgpack-python neovim
+"
+" For Rust
+" * curl -L https://github.com/rust-analyzer/rust-analyzer/releases/latest/download/rust-analyzer-linux -o ~/.local/bin/rust-analyzer
+" * chmod +x ~/.local/bin/rust-analyzer
+"
+" For C++?
+" * TODO
+
 set nocompatible              " be iMproved, required
 "------------------------------------------------------------
 " Features {{{1
@@ -116,7 +129,6 @@ set notimeout ttimeout ttimeoutlen=200
 
 set history=1000 "Store lots of :cmdline history
 
-" Use <F11> to toggle between 'paste' and 'nopaste'
 "------------------------------------------------------------
 " Set up vim-plug
 if empty(glob('~/.vim/autoload/plug.vim'))
@@ -126,13 +138,25 @@ if empty(glob('~/.vim/autoload/plug.vim'))
 endif
 
 call plug#begin('~/.vim/plugged')
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
+Plug 'dense-analysis/ale'
+Plug 'Shougo/neosnippet.vim'
+Plug 'honza/vim-snippets'
+
+" why both deoplete-jedi and jedi-vim? 
+" deoplete-jedi for autocomplete, jedi-vim for go-to-definition/etc
+Plug 'deoplete-plugins/deoplete-jedi'
+Plug 'davidhalter/jedi-vim'
+
 Plug 'sheerun/vim-polyglot'
 Plug 'vim-scripts/a.vim'
 Plug 'tomtom/tcomment_vim'
-Plug 'lifepillar/vim-mucomplete'
-Plug 'davidhalter/jedi-vim'
-Plug 'Shougo/neosnippet.vim'
-Plug 'honza/vim-snippets'
 Plug 'tpope/vim-surround'
 Plug 'vim-scripts/imaps.vim'
 Plug 'vim-scripts/bufkill.vim'
@@ -148,10 +172,10 @@ Plug 'junegunn/gv.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'preservim/nerdtree'
-Plug 'sbdchd/neoformat'
 Plug 'jpalardy/vim-slime'
 Plug 'unblevable/quick-scope'
 Plug 'machakann/vim-highlightedyank'
+Plug 'mhinz/vim-startify'
 call plug#end()
 "------------------------------------------------------------
 " Mappings {{{1
@@ -293,38 +317,63 @@ function! NERDTreeToggleAndFind()
 endfunction
 
 "------------------------------------------------------------
-"- mucomplete + neosnippets, these need to cooperate to handle tab
+"- deoplete + deoplete-jedi + neosnippets + ALE
 "
 " better completion menu behavior. 
 " https://vim.fandom.com/wiki/Make_Vim_completion_popup_menu_work_just_like_in_an_IDE
 set completeopt-=preview
 set completeopt+=longest,menuone,noselect
 
-let g:jedi#popup_on_dot = 0  " It may be 1 as well
-let g:mucomplete#enable_auto_at_startup = 1
-let g:mucomplete#always_use_completeopt = 1
-let g:mucomplete#completion_delay = 1
-let g:mucomplete#chains = {
-    \ 'default' : ['path', 'nsnp', 'omni', 'keyn', 'dict', 'uspl'],
-    \ 'vim'     : ['path', 'cmd', 'keyn']
-    \ }
-inoremap <silent> <expr> <plug><MyCR>
-    \ mucomplete#neosnippet#expand_snippet("\<cr>")
-imap <cr> <plug><MyCR>
+let g:deoplete#enable_at_startup = 1
+imap <C-s>     <Plug>(neosnippet_expand_or_jump)
+smap <C-s>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-s>     <Plug>(neosnippet_expand_target)
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<S-TAB>"
+inoremap <silent><expr><CR>  pumvisible() ? "\<C-s>" : "\<CR>"
+
 let g:neosnippet#enable_snipmate_compatibility = 1
 let g:neosnippet#snippets_directory='~/.vim/plugged/vim-snippets/snippets'
 
+
 "------------------------------------------------------------
-"- jedi
-let g:jedi#popup_on_dot = 0
-let g:jedi#goto_command = "<leader>e"
-let g:jedi#goto_assignments_command = "<leader>a"
-let g:jedi#goto_stubs_command = "<leader>s"
-let g:jedi#goto_definitions_command = ""
-let g:jedi#documentation_command = "K"
-let g:jedi#usages_command = "<leader>n"
-let g:jedi#completions_command = "<C-Space>"
-let g:jedi#rename_command = "<leader>r"
+"- ALE 
+
+let g:ale_completion_autoimport = 1
+let g:ale_fixers = {
+\   '*': ['remove_trailing_lines', 'trim_whitespace'],
+\   'python': ['black'],
+\   'rust': ['rustfmt']
+\}
+let g:ale_linters = {
+\   'rust': ['rls']
+\}
+nnoremap <F5> :ALEToggle<CR>
+
+function! ConfigALE()
+  if &ft!="python"
+    nnoremap <leader>ee :ALEGoToDefinition<CR>
+    nnoremap <leader>et :ALEGoToTypeDefinition<CR>
+    nnoremap <leader>ew :ALEFindReferences<CR>
+    nnoremap <leader>er :ALERename<CR>
+  endif
+endfunction
+au FileType * :call ConfigALE()
+
+"------------------------------------------------------------
+"- jedi-vim
+function! ConfigJedi() 
+  let g:jedi#popup_on_dot = 0
+  let g:jedi#goto_command = "<leader>ee"
+  let g:jedi#goto_assignments_command = "<leader>ea"
+  let g:jedi#goto_stubs_command = "<leader>es"
+  let g:jedi#documentation_command = "<leader>ed"
+  let g:jedi#usages_command = "<leader>ew"
+  let g:jedi#rename_command = "<leader>er"
+  let g:jedi#goto_definitions_command = ""
+  let g:jedi#completions_command = "<C-Space>"
+endfunction
+au FileType python :call ConfigJedi()
 
 "------------------------------------------------------------
 "- vim-slime (this needs a little work)
@@ -347,7 +396,7 @@ nnoremap <leader>f :Ag<CR>
 "------------------------------------------------------------
 "- other plugin configuration
 
-nnoremap <F4> :Neoformat<CR>
+nnoremap <F4> :ALEFix<CR>
 
 nnoremap <leader>m :MarkdownPreview<CR>
 
