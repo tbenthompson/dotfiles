@@ -2,7 +2,7 @@
 " General + Python
 " * copy .vim and .vimrc to the right locations
 " * preferably use vim installed from conda-forge
-" * mamba install -c conda-forge vim jedi msgpack-python neovim
+" * mamba install -c conda-forge vim jedi msgpack-python neovim flake8
 "
 " For Rust
 " * curl -L https://github.com/rust-analyzer/rust-analyzer/releases/latest/download/rust-analyzer-linux -o ~/.local/bin/rust-analyzer
@@ -176,6 +176,8 @@ Plug 'jpalardy/vim-slime'
 Plug 'unblevable/quick-scope'
 Plug 'machakann/vim-highlightedyank'
 Plug 'mhinz/vim-startify'
+Plug 'airblade/vim-rooter'
+Plug 'justinmk/vim-sneak'
 call plug#end()
 "------------------------------------------------------------
 " Mappings {{{1
@@ -359,6 +361,7 @@ function! ConfigALE()
   endif
 endfunction
 au FileType * :call ConfigALE()
+nnoremap <F4> :ALEFix<CR>
 
 "------------------------------------------------------------
 "- jedi-vim
@@ -396,7 +399,7 @@ nnoremap <leader>f :Ag<CR>
 "------------------------------------------------------------
 "- other plugin configuration
 
-nnoremap <F4> :ALEFix<CR>
+let g:sneak#label = 1
 
 nnoremap <leader>m :MarkdownPreview<CR>
 
