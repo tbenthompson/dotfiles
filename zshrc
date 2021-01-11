@@ -112,8 +112,6 @@ stty -ixon
 export PATH=$PATH:/snap/bin
 source "$HOME/.cargo/env"
 
-eval "$ZSH_POST_RC"
-
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
 __conda_setup="$('/home/tbent/.miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
@@ -129,3 +127,4 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
+eval "$ZSH_POST_RC"

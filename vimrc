@@ -162,6 +162,7 @@ Plug 'vim-scripts/imaps.vim'
 Plug 'vim-scripts/bufkill.vim'
 Plug 'vim-scripts/gitignore'
 Plug 'NLKNguyen/papercolor-theme'
+Plug 'christophermca/meta5'
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 Plug 'godlygeek/tabular', {'for': ['markdown']}
 Plug 'plasticboy/vim-markdown', {'for': ['markdown']}
@@ -200,9 +201,6 @@ nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
 set splitbelow
 set splitright
-
-" See open buffers!
-nnoremap <F6> :Buffers<CR>
 
 " CTRL-X and SHIFT-Del are Cut
 vnoremap <C-X> "+x
@@ -267,6 +265,9 @@ augroup END
 "------------------------------------------------------------
 "- colorscheme
 "
+set termguicolors
+let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 set background=dark
 colorscheme PaperColor
 
@@ -394,10 +395,45 @@ nmap <leader>x <Plug>SlimeSendCell
 nnoremap <C-P> :GFiles<CR>
 nnoremap <leader>p :Files<CR>
 nnoremap <leader>f :Ag<CR>
+nnoremap <F6> :Buffers<CR>
+
+"------------------------------------------------------------
+"- fzf.vim for searching files and contents
+"
+function! VimterminalDescription(idx,info)
+  let title = term_gettitle(a:info.bufnr)
+  if len(title)==0
+    let title = term_getstatus(a:info.bufnr)
+  endif
+  return printf("%2d.%4d %s [%s]",a:idx,a:info.bufnr,a:info.name,title)
+endfunction
+
+function! VimTerminalOpen() abort
+  if !exists("*term_start")
+    echoerr "vimterminal support requires vim built with :terminal support"
+    return
+  endif
+  let bufs = filter(term_list(),"term_getstatus(v:val)=~'running'")
+  let terms = map(bufs,"getbufinfo(v:val)[0]")
+  let choices = map(copy(terms),"VimterminalDescription(v:key+1,v:val)")
+  call add(choices, printf("%2d. <New instance>",len(terms)+1))
+  let choice = len(choices)>1
+      \ ? inputlist(choices)
+      \ : 1
+  if choice > 0
+    if choice>len(terms)
+      let bufnr = term_start(&shell, {'curwin':1})
+    else
+      let bufnr = terms[choice-1].bufnr
+    endif
+    call win_gotoid(get(win_findbuf(bufnr), 0))
+  endif
+endfunction
+nnoremap <F12> :call VimTerminalOpen()<CR>
+tnoremap <F12> <C-\><C-n>:call VimTerminalOpen()<CR>
 
 "------------------------------------------------------------
 "- other plugin configuration
-
 let g:sneak#label = 1
 
 nnoremap <leader>m :MarkdownPreview<CR>
