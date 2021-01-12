@@ -82,6 +82,7 @@ alias matlab="~/applications/MATLAB/bin/matlab"
 alias grepr="grep -rn"
 alias dead="sudo shutdown -h now"
 alias reborn="sudo shutdown -r now"
+
 #source ~/.alias
 # source /usr/local/bin/virtualenvwrapper.sh
 # export GEOS_DIR=/home/tbent/packages/geos

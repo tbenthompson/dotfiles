@@ -2,7 +2,7 @@
 " General + Python
 " * copy .vim and .vimrc to the right locations
 " * preferably use vim installed from conda-forge
-" * mamba install -c conda-forge vim jedi msgpack-python neovim flake8
+" * mamba install -c conda-forge vim jedi msgpack-python neovim flake8 ripgrep the_silver_searcher
 "
 " For Rust
 " * curl -L https://github.com/rust-analyzer/rust-analyzer/releases/latest/download/rust-analyzer-linux -o ~/.local/bin/rust-analyzer
@@ -162,7 +162,6 @@ Plug 'vim-scripts/imaps.vim'
 Plug 'vim-scripts/bufkill.vim'
 Plug 'vim-scripts/gitignore'
 Plug 'NLKNguyen/papercolor-theme'
-Plug 'christophermca/meta5'
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 Plug 'godlygeek/tabular', {'for': ['markdown']}
 Plug 'plasticboy/vim-markdown', {'for': ['markdown']}
@@ -239,16 +238,6 @@ function! s:zoom()
   endif
 endfunction
 nnoremap <silent> <leader>z :call <sid>zoom()<cr>
-
-"------------------------------------------------------------
-"- terminal
-"
-nnoremap <leader>t :vert term<CR>
-tnoremap <leader>' <C-\><C-n>
-tnoremap <C-J> <C-W><C-J>
-tnoremap <C-K> <C-W><C-K>
-tnoremap <C-L> <C-W><C-L>
-tnoremap <C-H> <C-W><C-H>
 
 "------------------------------------------------------------
 "- git stuff
@@ -348,6 +337,7 @@ let g:ale_fixers = {
 \   'rust': ['rustfmt']
 \}
 let g:ale_linters = {
+\   'python': ['flake8'],
 \   'rust': ['rls']
 \}
 nnoremap <F5> :ALEToggle<CR>
@@ -362,6 +352,10 @@ function! ConfigALE()
 endfunction
 au FileType * :call ConfigALE()
 nnoremap <F4> :ALEFix<CR>
+nnoremap ]a :ALENextWrap<CR>
+nnoremap [a :ALEPreviousWrap<CR>
+nnoremap ]q :cnext<CR>
+nnoremap [q :cprevious<CR>
 
 "------------------------------------------------------------
 "- jedi-vim
@@ -381,56 +375,53 @@ au FileType python :call ConfigJedi()
 "------------------------------------------------------------
 "- vim-slime (this needs a little work)
 "
-let g:slime_target = "vimterminal"
-let g:slime_no_mappings = 1
-xmap <leader>c <Plug>SlimeRegionSend
-nmap <leader>c <Plug>SlimeParagraphSend
-nmap <leader>v <Plug>SlimeConfig
-let g:slime_cell_delimiter = "#%%"
-nmap <leader>x <Plug>SlimeSendCell
+" let g:slime_target = "vimterminal"
+" let g:slime_no_mappings = 1
+" xmap <leader>c <Plug>SlimeRegionSend
+" nmap <leader>c <Plug>SlimeParagraphSend
+" nmap <leader>v <Plug>SlimeConfig
+" let g:slime_cell_delimiter = "#%%"
+" nmap <leader>x <Plug>SlimeSendCell
 
 "------------------------------------------------------------
 "- fzf.vim for searching files and contents
 "
 nnoremap <C-P> :GFiles<CR>
 nnoremap <leader>p :Files<CR>
-nnoremap <leader>f :Ag<CR>
+nnoremap <leader>f :Rg<CR>
+nnoremap <leader>g :Ag<CR>
 nnoremap <F6> :Buffers<CR>
+tnoremap <F6> <C-w>:Buffers<CR>
 
 "------------------------------------------------------------
-"- fzf.vim for searching files and contents
+"- terminals!
 "
-function! VimterminalDescription(idx,info)
-  let title = term_gettitle(a:info.bufnr)
-  if len(title)==0
-    let title = term_getstatus(a:info.bufnr)
-  endif
-  return printf("%2d.%4d %s [%s]",a:idx,a:info.bufnr,a:info.name,title)
-endfunction
+tnoremap <leader>' <C-\><C-n>
+tnoremap <C-J> <C-W><C-J>
+tnoremap <C-K> <C-W><C-K>
+tnoremap <C-L> <C-W><C-L>
+tnoremap <C-H> <C-W><C-H>
 
-function! VimTerminalOpen() abort
-  if !exists("*term_start")
-    echoerr "vimterminal support requires vim built with :terminal support"
-    return
-  endif
-  let bufs = filter(term_list(),"term_getstatus(v:val)=~'running'")
-  let terms = map(bufs,"getbufinfo(v:val)[0]")
-  let choices = map(copy(terms),"VimterminalDescription(v:key+1,v:val)")
-  call add(choices, printf("%2d. <New instance>",len(terms)+1))
-  let choice = len(choices)>1
-      \ ? inputlist(choices)
-      \ : 1
-  if choice > 0
-    if choice>len(terms)
-      let bufnr = term_start(&shell, {'curwin':1})
-    else
-      let bufnr = terms[choice-1].bufnr
-    endif
-    call win_gotoid(get(win_findbuf(bufnr), 0))
-  endif
+function! TerminalOpen() abort
+  let bufnr = term_start(&shell, {'curwin':1})
+  call win_gotoid(get(win_findbuf(bufnr), 0))
 endfunction
-nnoremap <F12> :call VimTerminalOpen()<CR>
-tnoremap <F12> <C-\><C-n>:call VimTerminalOpen()<CR>
+function! TerminalsList()
+  return filter(range(1, bufnr('$')), 'buflisted(v:val) && getbufvar(v:val, "&buftype") == "terminal"')
+endfunction
+function! TerminalStep(step) abort
+  let terms = TerminalsList()
+  let curidx = index(terms, bufnr("%"))
+  let newidx = (curidx + a:step == len(terms)) ? 0 : ((curidx + a:step < 0) ? (len(terms) - 1) : (curidx + a:step)) 
+  let newterm = get(terms, newidx)
+  execute 'buffer' newterm
+endfunction
+nnoremap <F12> :call TerminalOpen()<CR>
+nnoremap <F11> :call TerminalStep(1)<CR>
+nnoremap <F10> :call TerminalStep(-1)<CR>
+tnoremap <F12> <C-w>:call TerminalOpen()<CR>
+tnoremap <F11> <C-w>:call TerminalStep(1)<CR>
+tnoremap <F10> <C-w>:call TerminalStep(-1)<CR>
 
 "------------------------------------------------------------
 "- other plugin configuration

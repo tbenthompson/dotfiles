@@ -20,7 +20,7 @@ font:
 colors:
   primary:
     foreground: '#d0cfcc'
-    background: '#171421'
+    background: '#1c1c1c'
 
   normal:
     black:   '#171421'
